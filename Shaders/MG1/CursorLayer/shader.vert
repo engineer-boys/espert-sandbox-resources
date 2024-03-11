@@ -1,17 +1,18 @@
 #version 450
 
-//layout (location = 0) in vec2 position;
-//layout (location = 1) in vec3 color;
+layout (location = 0) out mat4 perspective_mat;
 
-//layout (location = 0) out vec3 geom_color;
+layout (set = 0, binding = 0) uniform UBO {
+    vec2 mouse_pos;
+} ubo;
 
 layout (push_constant) uniform Push {
-    vec2 mouse_pos;
+    mat4 perspective_mat;
 } push;
 
 void main()
 {
-    gl_Position = vec4(push.mouse_pos, 0.0, 1.0);
+    gl_Position = vec4(ubo.mouse_pos, 0.0, 1.0);
 
-//    geom_color = color;
+    perspective_mat = push.perspective_mat;
 }

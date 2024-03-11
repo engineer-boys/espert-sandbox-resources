@@ -1,27 +1,37 @@
 #version 450
 
 layout (points) in;
-layout (line_strip, max_vertices = 5) out;
+layout (line_strip, max_vertices = 6) out;
 
-//layout (location = 0) in vec3 geom_color[];
+layout (location = 0) in mat4 perspective_mat[];
 
-//layout (location = 0) out vec3 frag_color;
+const float aspect_ratio = 1.77777779;
+const float size_x = 0.025;
+const float size_y = size_x * aspect_ratio;
 
 void main()
 {
     // Emit original vertex
-    gl_Position = gl_in[0].gl_Position;
-//    frag_color = geom_color[0];
+    gl_Position = perspective_mat[0] * gl_in[0].gl_Position;
     EmitVertex();
 
-    // Emit vertices forming a cross
-    float size = 0.1; // Adjust size of cross as needed
-    vec2 offsets[4] = vec2[4](vec2(-size, 0.0), vec2(size, 0.0), vec2(0.0, -size), vec2(0.0, size));
-    for (int i = 0; i < 4; ++i) {
-        gl_Position = gl_in[0].gl_Position + vec4(offsets[i], 0.0, 0.0);
-//        frag_color = geom_color[0];
-        EmitVertex();
-    }
+    // Left - right strip
+    vec2 offset_left = vec2(-size_x, 0.0);
+    vec2 offset_right = vec2(size_x, 0.0);
+    gl_Position = gl_in[0].gl_Position + vec4(offset_left, 0.0, 0.0);
+    EmitVertex();
+    gl_Position = gl_in[0].gl_Position + vec4(offset_right, 0.0, 0.0);
+    EmitVertex();
+
+    // Top - bottom strip
+    gl_Position = gl_in[0].gl_Position;
+    EmitVertex();
+    vec2 offset_top = vec2(0.0, size_y);
+    vec2 offset_bottom = vec2(0.0, -size_y);
+    gl_Position = gl_in[0].gl_Position + vec4(offset_top, 0.0, 0.0);
+    EmitVertex();
+    gl_Position = gl_in[0].gl_Position + vec4(offset_bottom, 0.0, 0.0);
+    EmitVertex();
 
     EndPrimitive();
 }
