@@ -1,18 +1,16 @@
 #version 450
 
-layout (location = 0) out mat4 perspective_mat;
+layout (set = 0, binding = 0) uniform CursorParamsUBO {
+    float cursor_size;
+    vec3 cursor_color;
+    float aspect_ratio;
+} cpUbo;
 
-layout (set = 0, binding = 0) uniform UBO {
+layout (set = 1, binding = 0) uniform MousePosUBO {
     vec2 mouse_pos;
-} ubo;
-
-layout (push_constant) uniform Push {
-    mat4 perspective_mat;
-} push;
+} mpUbo;
 
 void main()
 {
-    gl_Position = vec4(ubo.mouse_pos, 0.0, 1.0);
-
-    perspective_mat = push.perspective_mat;
+    gl_Position = vec4(mpUbo.mouse_pos, 0.0, 1.0);
 }

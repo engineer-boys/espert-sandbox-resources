@@ -3,16 +3,24 @@
 layout (points) in;
 layout (line_strip, max_vertices = 6) out;
 
-layout (location = 0) in mat4 perspective_mat[];
+layout (set = 0, binding = 0) uniform CursorParamsUBO {
+    float cursor_size;
+    vec3 cursor_color;
+    float aspect_ratio;
+} cpUbo;
 
-const float aspect_ratio = 1.77777779;
-const float size_x = 0.025;
-const float size_y = size_x * aspect_ratio;
+//const float aspect_ratio = 1.77777779;
+//const float size_x = 0.025;
+//const float size_y = size_x * aspect_ratio;
 
 void main()
 {
+    const float aspect_ratio = cpUbo.aspect_ratio;
+    const float size_x = cpUbo.cursor_size;
+    const float size_y = size_x * aspect_ratio;
+
     // Emit original vertex
-    gl_Position = perspective_mat[0] * gl_in[0].gl_Position;
+    gl_Position = gl_in[0].gl_Position;
     EmitVertex();
 
     // Left - right strip
