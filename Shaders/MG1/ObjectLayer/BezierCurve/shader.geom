@@ -5,11 +5,15 @@
 layout(lines_adjacency) in;
 layout(line_strip, max_vertices = 124) out;
 
-layout (set = 0, binding = 2) uniform SPLINE_BASE
+layout (set = 0, binding = 2) uniform BEZIER_CURVE_GEOM_UBO
 {
-    mat4 mat;
-} sb;
+    mat4 spline_base;
+    int control_line;
+} bcgu;
 
+layout (location = 0) out int control_line;
+
+void emitVertex(vec4 position, int display_control_line);
 vec4 toBezier(float d, int i, vec4 p0, vec4 p1, vec4 p2, vec4 p3);
 
 void main()
@@ -24,14 +28,30 @@ void main()
     float d = 1.0 / float(SEGMENTS);
     for (int i = 0; i <= SEGMENTS - 1; i++)
     {
-        gl_Position = toBezier(d, i, P[0], P[1], P[2], P[3]);
-        EmitVertex();
-        gl_Position = toBezier(d, i + 1, P[0], P[1], P[2], P[3]);
-        EmitVertex();
-
+        emitVertex(toBezier(d, i, P[0], P[1], P[2], P[3]), 0);
+        emitVertex(toBezier(d, i + 1, P[0], P[1], P[2], P[3]), 0);
         EndPrimitive();
     }
 
+    if(bcgu.control_line == 1)
+    {
+        emitVertex(gl_in[0].gl_Position, 1);
+        emitVertex(gl_in[1].gl_Position, 1);
+        EndPrimitive();
+        emitVertex(gl_in[1].gl_Position, 1);
+        emitVertex(gl_in[2].gl_Position, 1);
+        EndPrimitive();
+        emitVertex(gl_in[2].gl_Position, 1);
+        emitVertex(gl_in[3].gl_Position, 1);
+        EndPrimitive();
+    }
+}
+
+void emitVertex(vec4 position, int display_control_line)
+{
+    gl_Position = position;
+    control_line = display_control_line;
+    EmitVertex();
 }
 
 vec4 toBezier(float d, int i, vec4 p0, vec4 p1, vec4 p2, vec4 p3)
@@ -40,6 +60,6 @@ vec4 toBezier(float d, int i, vec4 p0, vec4 p1, vec4 p2, vec4 p3)
     float t2 = t * t;
     float t3 = t2 * t;
 
-    return mat4(p0, p1, p2, p3) * sb.mat * vec4(1, t, t2, t3);
+    return mat4(p0, p1, p2, p3) * bcgu.spline_base * vec4(1, t, t2, t3);
 
 }
