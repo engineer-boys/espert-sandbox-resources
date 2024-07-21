@@ -6,7 +6,7 @@
 layout(lines_adjacency) in;
 layout(line_strip, max_vertices = 124) out;
 
-layout (set = 0, binding = 2) uniform SPLINE_UBO
+layout (set = 0, binding = 1) uniform SPLINE_UBO
 {
     int control_line;
 } su;
