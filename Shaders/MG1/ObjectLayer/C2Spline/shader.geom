@@ -18,6 +18,8 @@ layout (set = 0, binding = 1) uniform C2_SPLINE_UBO
     vec4 bezier_points[MAX_BEZIER_POINTS];
 } c2su;
 
+layout (location = 0) flat in int draw_control_line[];
+
 layout (location = 0) out int control_line;
 
 // bool control_line_ready = false;
@@ -81,11 +83,14 @@ void emitControlLine()
     }
     else // BSpline
     {
-        for (int i = 0; i < MAX_BEZIER_POINTS - 1; i++)
+        if(draw_control_line[0] == 0)
         {
-            emitVertex(mvp.mat * c2su.bezier_points[i], 1);
-            emitVertex(mvp.mat * c2su.bezier_points[i + 1], 1);
-            EndPrimitive();
+            for(int i = 0; i < MAX_BEZIER_POINTS - 1; i++)
+            {
+                emitVertex(mvp.mat * c2su.bezier_points[i], 1);
+                emitVertex(mvp.mat * c2su.bezier_points[i + 1], 1);
+                EndPrimitive();
+            }
         }
     }
 }

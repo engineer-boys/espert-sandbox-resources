@@ -6,7 +6,6 @@ layout (location = 0) out vec4 outColor;
 
 layout (location = 0) flat in int control_line;
 
-
 layout (set = 0, binding = 2) uniform UBO {
     vec3 color;
 } ubo;
