@@ -3,15 +3,8 @@
 #define SEGMENTS 30
 #define BERNSTEIN_BASE mat4(1, 0, 0, 0, -3, 3, 0, 0, 3, -6, 3, 0, -1, 3, -3, 1)
 
-layout(lines_adjacency) in;
-layout(line_strip, max_vertices = 124) out;
-
-layout (set = 0, binding = 1) uniform SPLINE_UBO
-{
-    int control_line;
-} su;
-
-layout (location = 0) out int control_line;
+layout (lines_adjacency) in;
+layout (line_strip, max_vertices = 124) out;
 
 void emitVertex(vec4 position, int display_control_line);
 vec4 toBezier(float d, int i, vec4 p0, vec4 p1, vec4 p2, vec4 p3);
@@ -32,25 +25,11 @@ void main()
         emitVertex(toBezier(d, i + 1, P[0], P[1], P[2], P[3]), 0);
         EndPrimitive();
     }
-
-    if(su.control_line == 1)
-    {
-        emitVertex(gl_in[0].gl_Position, 1);
-        emitVertex(gl_in[1].gl_Position, 1);
-        EndPrimitive();
-        emitVertex(gl_in[1].gl_Position, 1);
-        emitVertex(gl_in[2].gl_Position, 1);
-        EndPrimitive();
-        emitVertex(gl_in[2].gl_Position, 1);
-        emitVertex(gl_in[3].gl_Position, 1);
-        EndPrimitive();
-    }
 }
 
 void emitVertex(vec4 position, int display_control_line)
 {
     gl_Position = position;
-    control_line = display_control_line;
     EmitVertex();
 }
 
